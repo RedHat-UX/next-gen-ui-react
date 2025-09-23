@@ -1,7 +1,8 @@
 {
-  "name": "dynamicui",
+  "name": "@rhngui/patternfly-react-renderer",
   "private": false,
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.0",
+  "description": "Patternfly React component wrappers for the Next Gen UI Agent",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
@@ -12,9 +13,17 @@
     "LICENSE"
   ],
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "exports": {
     "import": "./dist/index.es.js",
     "require": "./dist/index.cjs.js"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "scripts": {
     "dev": "vite",
@@ -24,7 +33,8 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepack": "cp -f ../../LICENSE ./LICENSE"
+    "prepack": "cp -f ../../LICENSE ./LICENSE",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@patternfly/chatbot": "^6.3.2",
@@ -33,8 +43,6 @@
     "@patternfly/react-core": "^6.3.1",
     "@patternfly/react-icons": "^6.3.1",
     "@patternfly/react-table": "^6.2.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "victory": "^37.3.6",
@@ -46,8 +54,8 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/lodash": "^4.17.16",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.32.0",
     "eslint-plugin-import": "^2.31.0",
@@ -56,6 +64,8 @@
     "globals": "^16.3.0",
     "jsdom": "^26.1.0",
     "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.0",
     "vite": "^7.1.0",
