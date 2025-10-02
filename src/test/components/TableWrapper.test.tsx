@@ -1,181 +1,246 @@
-import { render, fireEvent, screen } from "@testing-library/react";
-import { vi } from "vitest";
+import { render, screen } from "@testing-library/react";
 
 import TableWrapper from "../../components/TableWrapper";
 
-const columns = [
-  { key: "name", label: "Name" },
-  { key: "age", label: "Age" },
-];
-
-const rows = [
-  { name: "John Doe", age: 28 },
-  { name: "Jane Smith", age: 34 },
-];
-
 describe("TableWrapper Component", () => {
-  it("should render the table correctly", () => {
-    render(<TableWrapper columns={columns} rows={rows} caption="User Table" variant={undefined} graph={undefined} onRowSelect={undefined} actions={undefined} setCustomData={undefined} />);
-    expect(screen.getByText("User Table")).toBeInTheDocument();
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Age")).toBeInTheDocument();
-  });
-
-  it("should render the table with selectable rows", () => {
-    render(
-      <TableWrapper
-        columns={columns}
-        rows={rows}
-        caption="User Table"
-        selectable={true} variant={undefined} graph={undefined} onRowSelect={undefined} actions={undefined} setCustomData={undefined}      />
-    );
-    const checkboxes = screen.getAllByRole("checkbox");
-    expect(checkboxes).toHaveLength(3); // 1 for "select all", 2 for individual rows
-  });
-
-  it('should select and deselect a row', () => {
-    const setCustomDataMock = vi.fn();
-    const onRowSelectMock = vi.fn();
-  
-    const mockColumns = [
-      { label: 'Column 1', key: 'test1' },
-      { label: 'Column 2', key: 'test2' },
-    ];
-  
-    const mockRows = [
-      { id: 1, test1: 'test1', test2: 'test2' },
-    ];
-  
-    const { getByTestId, getByLabelText } = render(
-      <TableWrapper
-        columns={mockColumns}
-        rows={mockRows}
-        caption="Test Table"
-        selectable={true}
-        onRowSelect={onRowSelectMock}
-        setCustomData={setCustomDataMock}
-      />
-    );
-  
-    const row = getByTestId('row-1');
-    const checkbox = getByLabelText('Select row 0');
-  
-    // Select the row
-    fireEvent.click(checkbox);
-  
-    // After selection, the mock function should be called with the selected row
-    expect(setCustomDataMock).toHaveBeenCalledWith([
+  const mockFieldsData = {
+    component: "table" as const,
+    title: "Details of Toy Story",
+    id: "call_5glz9rb6",
+    fields: [
       {
-        id: 1,
-        test1: 'test1',
-        test2: 'test2',
+        name: "Title",
+        data_path: "movie.title",
+        data: ["Toy Story"],
       },
-    ]);
-  
-    // Deselect the row
-    fireEvent.click(checkbox); // Deselect by clicking the checkbox again
-  
-    // After deselection, the mock function should be called with an empty array
-    expect(setCustomDataMock).toHaveBeenCalledWith([]);
+      {
+        name: "Year",
+        data_path: "movie.year",
+        data: [1995],
+      },
+      {
+        name: "Runtime",
+        data_path: "movie.runtime",
+        data: [81],
+      },
+      {
+        name: "IMDB Rating",
+        data_path: "movie.imdbRating",
+        data: [8.3],
+      },
+      {
+        name: "Revenue",
+        data_path: "movie.revenue",
+        data: [373554033],
+      },
+      {
+        name: "Countries",
+        data_path: "movie.countries[size:1]",
+        data: [["USA"]],
+      },
+    ],
+  };
+
+  it("should render table with fields prop", () => {
+    render(<TableWrapper {...mockFieldsData} />);
+
+    // Check that the title appears in the table caption
+    const tableCaption = screen.getByRole("grid").querySelector("caption");
+    expect(tableCaption).toHaveTextContent("Details of Toy Story");
+
+    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Year")).toBeInTheDocument();
+    expect(screen.getByText("Runtime")).toBeInTheDocument();
+    expect(screen.getByText("IMDB Rating")).toBeInTheDocument();
+    expect(screen.getByText("Revenue")).toBeInTheDocument();
+    expect(screen.getByText("Countries")).toBeInTheDocument();
   });
 
-  it("should select all rows", () => {
-    const mockOnRowSelect = vi.fn();
-    const mockSetCustomData = vi.fn();
-  
-    render(
-      <TableWrapper
-        columns={columns}
-        rows={rows}
-        caption="User Table"
-        selectable={true}
-        onRowSelect={mockOnRowSelect}
-        setCustomData={mockSetCustomData}
-        variant={undefined}
-        graph={undefined}
-        actions={undefined}
-      />
-    );
-  
-    // Select all rows
-    fireEvent.click(screen.getByLabelText("Select all rows"));
-    expect(mockOnRowSelect).toHaveBeenCalledWith(rows);
-  
-    // Deselect all rows
-    fireEvent.click(screen.getByLabelText("Select all rows"));
-    expect(mockOnRowSelect).toHaveBeenCalledWith([]);
+  it("should render data values correctly from fields", () => {
+    render(<TableWrapper {...mockFieldsData} />);
+
+    expect(screen.getByText("Toy Story")).toBeInTheDocument();
+    expect(screen.getByText("1995")).toBeInTheDocument();
+    expect(screen.getByText("81")).toBeInTheDocument();
+    expect(screen.getByText("8.3")).toBeInTheDocument();
+    expect(screen.getByText("373554033")).toBeInTheDocument();
+    expect(screen.getByText("USA")).toBeInTheDocument();
   });
-  
-  it("should render the chart if graph data is provided", () => {
-    const graph = {
-      column: "age",
-      title: "Age Chart",
+
+  it("should handle array data correctly", () => {
+    const fieldsWithArray = {
+      ...mockFieldsData,
+      fields: [
+        {
+          name: "Countries",
+          data_path: "movie.countries",
+          data: [["USA", "Canada", "Mexico"]],
+        },
+      ],
     };
-    render(
-      <TableWrapper
-        columns={columns}
-        rows={rows}
-        caption="User Table"
-        graph={graph} variant={undefined} onRowSelect={undefined} actions={undefined} setCustomData={undefined}      />
-    );
-    expect(screen.getByTitle("Age Chart")).toBeInTheDocument();
+
+    render(<TableWrapper {...fieldsWithArray} />);
+
+    expect(screen.getByText("USA, Canada, Mexico")).toBeInTheDocument();
   });
 
-  it("should not render the chart if no graph data is provided", () => {
-    render(
-      <TableWrapper columns={columns} rows={rows} caption="User Table" variant={undefined} graph={undefined} onRowSelect={undefined} actions={undefined} setCustomData={undefined} />
-    );
-    expect(screen.queryByTitle("Chart")).toBeNull();
+  it("should handle null values correctly", () => {
+    const fieldsWithNull = {
+      ...mockFieldsData,
+      fields: [
+        {
+          name: "Title",
+          data_path: "movie.title",
+          data: [null],
+        },
+        {
+          name: "Year",
+          data_path: "movie.year",
+          data: [1995],
+        },
+      ],
+    };
+
+    render(<TableWrapper {...fieldsWithNull} />);
+
+    expect(screen.getByText("N/A")).toBeInTheDocument();
+    expect(screen.getByText("1995")).toBeInTheDocument();
   });
 
-  it("should call setCustomData when a row is selected or deselected", () => {
-    const mockSetCustomData = vi.fn();
-    render(
-      <TableWrapper
-        columns={columns}
-        rows={rows}
-        caption="User Table"
-        selectable={true}
-        setCustomData={mockSetCustomData} variant={undefined} graph={undefined} onRowSelect={undefined} actions={undefined}      />
-    );
+  it("should handle multiple rows of data", () => {
+    const fieldsWithMultipleRows = {
+      ...mockFieldsData,
+      fields: [
+        {
+          name: "Title",
+          data_path: "movie.title",
+          data: ["Toy Story", "Toy Story 2", "Toy Story 3"],
+        },
+        {
+          name: "Year",
+          data_path: "movie.year",
+          data: [1995, 1999, 2010],
+        },
+      ],
+    };
 
-    // Select first row
-    fireEvent.click(screen.getAllByRole("checkbox")[1]);
-    expect(mockSetCustomData).toHaveBeenCalledWith([rows[0]]);
+    render(<TableWrapper {...fieldsWithMultipleRows} />);
 
-    // Deselect first row
-    fireEvent.click(screen.getAllByRole("checkbox")[1]);
-    expect(mockSetCustomData).toHaveBeenCalledWith([]);
+    expect(screen.getByText("Toy Story")).toBeInTheDocument();
+    expect(screen.getByText("Toy Story 2")).toBeInTheDocument();
+    expect(screen.getByText("Toy Story 3")).toBeInTheDocument();
+    expect(screen.getByText("1995")).toBeInTheDocument();
+    expect(screen.getByText("1999")).toBeInTheDocument();
+    expect(screen.getByText("2010")).toBeInTheDocument();
   });
 
-  it("should trigger onRowSelect with correct row data when a row is clicked", () => {
-    const mockOnRowSelect = vi.fn();
-    const mockSetCustomData = vi.fn();
-  
+  it("should apply custom id and className", () => {
+    const customId = "custom-table-id";
+    const customClassName = "custom-table-class";
+
     render(
       <TableWrapper
-        columns={columns}
-        rows={rows}
-        caption="User Table"
-        selectable={true}
-        onRowSelect={mockOnRowSelect}
-        setCustomData={mockSetCustomData}
-        variant={undefined}
-        graph={undefined}
-        actions={undefined}
+        {...mockFieldsData}
+        id={customId}
+        className={customClassName}
       />
     );
-  
-    // Select second row (Jane Smith)
-    fireEvent.click(screen.getAllByRole("checkbox")[2]);
-    expect(mockOnRowSelect).toHaveBeenCalledWith([rows[1]]);
+
+    // Find the Card wrapper that contains the table by looking for the element with the custom id
+    const cardElement = document.getElementById(customId);
+    expect(cardElement).toBeInTheDocument();
+    expect(cardElement).toHaveClass(customClassName);
   });
 
-  it("should show the correct row data in the table", () => {
-    render(<TableWrapper columns={columns} rows={rows} caption="User Table" variant={undefined} graph={undefined} onRowSelect={undefined} actions={undefined} setCustomData={undefined} />);
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
-    expect(screen.getByText("28")).toBeInTheDocument();
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-    expect(screen.getByText("34")).toBeInTheDocument();
+  it("should handle empty fields array", () => {
+    render(<TableWrapper {...mockFieldsData} fields={[]} />);
+
+    // Check that the title appears in the table caption
+    const tableCaption = screen.getByRole("grid").querySelector("caption");
+    expect(tableCaption).toHaveTextContent("Details of Toy Story");
+    // Should not crash with empty fields
+  });
+
+  it("should handle fields with different data lengths", () => {
+    const fieldsWithDifferentLengths = {
+      ...mockFieldsData,
+      fields: [
+        {
+          name: "Field 1",
+          data_path: "test.field1",
+          data: ["value1", "value2"],
+        },
+        {
+          name: "Field 2",
+          data_path: "test.field2",
+          data: ["single value"],
+        },
+      ],
+    };
+
+    render(<TableWrapper {...fieldsWithDifferentLengths} />);
+
+    // Should create 2 rows (max length is 2)
+    expect(screen.getByText("value1")).toBeInTheDocument();
+    expect(screen.getByText("value2")).toBeInTheDocument();
+    expect(screen.getByText("single value")).toBeInTheDocument();
+    // Second row should have N/A for Field 2
+    const naElements = screen.getAllByText("N/A");
+    expect(naElements.length).toBeGreaterThan(0);
+  });
+
+  it("should render table with correct structure", () => {
+    render(<TableWrapper {...mockFieldsData} />);
+
+    // Check table structure
+    const table = screen.getByRole("grid");
+    expect(table).toBeInTheDocument();
+
+    // Check caption
+    const tableCaption = table.querySelector("caption");
+    expect(tableCaption).toHaveTextContent("Details of Toy Story");
+
+    // Check headers
+    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Year")).toBeInTheDocument();
+    expect(screen.getByText("Runtime")).toBeInTheDocument();
+    expect(screen.getByText("IMDB Rating")).toBeInTheDocument();
+    expect(screen.getByText("Revenue")).toBeInTheDocument();
+    expect(screen.getByText("Countries")).toBeInTheDocument();
+  });
+
+  it("should handle mixed data types", () => {
+    const fieldsWithMixedTypes = {
+      ...mockFieldsData,
+      fields: [
+        {
+          name: "String Field",
+          data_path: "test.string",
+          data: ["test string"],
+        },
+        {
+          name: "Number Field",
+          data_path: "test.number",
+          data: [123],
+        },
+        {
+          name: "Boolean Field",
+          data_path: "test.boolean",
+          data: [true],
+        },
+        {
+          name: "Null Field",
+          data_path: "test.null",
+          data: [null],
+        },
+      ],
+    };
+
+    render(<TableWrapper {...fieldsWithMixedTypes} />);
+
+    expect(screen.getByText("test string")).toBeInTheDocument();
+    expect(screen.getByText("123")).toBeInTheDocument();
+    expect(screen.getByText("true")).toBeInTheDocument();
+    expect(screen.getByText("N/A")).toBeInTheDocument();
   });
 });
