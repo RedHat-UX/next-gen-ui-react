@@ -7,9 +7,6 @@ import { cloneElement, isValidElement, useState } from "react";
 
 import { componentsMap } from "../constants/componentsMap";
 
-const FragmentWrapper = ({ children }: { children?: React.ReactNode }) => (
-  <>{children}</>
-);
 
 interface IProps {
   config: any;
@@ -87,7 +84,14 @@ const DynamicComponent = ({ config, customProps = {} }: IProps) => {
     return newProps;
   };
 
-  const Component = componentsMap[config?.component] || FragmentWrapper;
+  // Check if component exists in componentsMap
+  const Component = componentsMap[config?.component];
+  
+  if (!Component) {
+    // Throw an error for missing components so ErrorBoundary can catch it
+    throw new Error(`Component "${config?.component}" is not available in the React package. Available components: ${Object.keys(componentsMap).join(', ')}`);
+  }
+  
   const newProps = parseProps(config?.props || config);
 
   return (

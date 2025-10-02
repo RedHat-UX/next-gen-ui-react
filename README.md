@@ -12,8 +12,12 @@ This npm package provides a collection of reusable Patternfly React components t
 * Patternfly React Components
   - OneCardWrapper
   - TableWrapper
+  - VideoPlayerWrapper
 * Dynamic Component Renderer
   - DynamicComponents
+* Supported Components
+  - `one-card`, `table`, `video-player`
+  - `video-player` supports YouTube video URLs and direct video file URLs
 
 ## Installation
 
@@ -60,6 +64,29 @@ function App() {
   return <OneCardWrapper {...mockData} />;
 }
 ```
+
+### VideoPlayer Component
+
+```jsx
+import { VideoPlayerWrapper } from '@rhngui/patternfly-react-renderer';
+
+const videoData = {
+  component: "video-player",
+  video: "https://www.youtube.com/embed/v-PjgYDrg70",
+  video_img: "https://img.youtube.com/vi/v-PjgYDrg70/maxresdefault.jpg",
+  title: "Toy Story Trailer"
+};
+
+function App() {
+  return <VideoPlayerWrapper {...videoData} />;
+}
+```
+
+**Supported Video Formats:**
+- YouTube URLs (e.g., `https://www.youtube.com/embed/VIDEO_ID`)
+- Direct video file URLs (e.g., `https://example.com/video.mp4`)
+- Automatic thumbnail generation for YouTube videos
+- Poster image fallback support
 
 ## Links
 * [Documentation](https://redhat-ux.github.io/next-gen-ui-agent/guide/renderer/patternfly_npm/)
