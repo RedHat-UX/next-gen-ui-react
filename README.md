@@ -9,15 +9,17 @@ This npm package provides a collection of reusable Patternfly React components t
 
 ## Provides:
 
-* Patternfly React Components
+- Patternfly React Components
+  - ImageComponent
   - OneCardWrapper
   - TableWrapper
-* Dynamic Component Renderer
+- Dynamic Component Renderer
   - DynamicComponents
 
 ## Installation
 
 **Pre-requisites:**
+
 - React 18+
 - TypeScript
 
@@ -30,27 +32,28 @@ npm install @rhngui/patternfly-react-renderer
 ### OneCard Component
 
 ```jsx
-import { OneCardWrapper } from '@rhngui/patternfly-react-renderer';
+import { OneCardWrapper } from "@rhngui/patternfly-react-renderer";
 
 const mockData = {
   title: "Movie Details",
-  image: "https://image.tmdb.org/t/p/w440_and_h660_face/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg",
+  image:
+    "https://image.tmdb.org/t/p/w440_and_h660_face/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg",
   fields: [
     {
       name: "Title",
       data_path: "movie.title",
-      data: ["Toy Story"]
+      data: ["Toy Story"],
     },
     {
       name: "Year",
       data_path: "movie.year",
-      data: [1995]
+      data: [1995],
     },
     {
       name: "Genres",
       data_path: "movie.genres",
-      data: ["Animation", "Adventure"]
-    }
+      data: ["Animation", "Adventure"],
+    },
   ],
   imageSize: "md",
   id: "movie-card",
@@ -61,7 +64,26 @@ function App() {
 }
 ```
 
+### Image Component
+
+```jsx
+import { DynamicComponent } from "@rhngui/patternfly-react-renderer";
+
+const imageConfig = {
+  component: "image",
+  title: "Movie Poster",
+  image:
+    "https://image.tmdb.org/t/p/w440_and_h660_face/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg",
+  id: "movie-poster-image",
+};
+
+function App() {
+  return <DynamicComponent config={imageConfig} />;
+}
+```
+
 ## Links
-* [Documentation](https://redhat-ux.github.io/next-gen-ui-agent/guide/renderer/patternfly_npm/)
-* [Source Code](https://github.com/RedHat-UX/next-gen-ui-agent/tree/main/libs_js/next_gen_ui_react)
-* [Contributing](https://redhat-ux.github.io/next-gen-ui-agent/development/contributing/)
+
+- [Documentation](https://redhat-ux.github.io/next-gen-ui-agent/guide/renderer/patternfly_npm/)
+- [Source Code](https://github.com/RedHat-UX/next-gen-ui-agent/tree/main/libs_js/next_gen_ui_react)
+- [Contributing](https://redhat-ux.github.io/next-gen-ui-agent/development/contributing/)
