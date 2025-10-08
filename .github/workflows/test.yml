@@ -4,19 +4,12 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'libs_js/next_gen_ui_react/**'
   pull_request:
-    paths:
-      - 'libs_js/next_gen_ui_react/**'
 
 jobs:
   react-tests:
     name: React unit tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: libs_js/next_gen_ui_react
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,9 +17,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
           cache: npm
-          cache-dependency-path: libs_js/next_gen_ui_react/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
