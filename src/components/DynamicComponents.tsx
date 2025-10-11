@@ -1,10 +1,7 @@
-import "@patternfly/react-core/dist/styles/base.css";
-import "@patternfly/chatbot/dist/css/main.css";
+// Import minimal PatternFly CSS (no-reset version is smaller)
+import "@patternfly/react-core/dist/styles/base-no-reset.css";
 import "../global.css";
 
-import isArray from "lodash/isArray";
-import isEmpty from "lodash/isEmpty";
-import map from "lodash/map";
 import { cloneElement, isValidElement, useState } from "react";
 
 import { componentsMap } from "../constants/componentsMap";
@@ -21,7 +18,7 @@ interface IProps {
 const DynamicComponent = ({ config, customProps = {} }: IProps) => {
   const [customData, setCustomData] = useState(null);
 
-  if (isEmpty(config)) {
+  if (!config || Object.keys(config).length === 0) {
     console.error("Config is empty");
     return null;
   }
@@ -99,8 +96,8 @@ const DynamicComponent = ({ config, customProps = {} }: IProps) => {
 
   return (
     <Component {...newProps}>
-      {isArray(config?.children)
-        ? map(config?.children, (child, index) => (
+      {Array.isArray(config?.children)
+        ? config?.children.map((child, index) => (
             <DynamicComponent
               config={child}
               key={(child.key || child.component || index) + index}
