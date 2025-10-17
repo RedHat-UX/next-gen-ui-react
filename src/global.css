@@ -163,3 +163,64 @@
   color: var(--pf-global--Color--danger-200);
   border: 1px solid var(--pf-global--Color--danger-200);
 }
+
+/* Copy Button Styles */
+.cell-with-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.cell-value {
+  flex: 1;
+}
+
+/* Copy button - hidden by default */
+.copy-button {
+  opacity: 0;
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  flex-shrink: 0;
+  color: #6b7280; /* PatternFly neutral gray */
+}
+
+.copy-button:hover {
+  background: #f3f4f6;
+  transform: scale(1.1);
+  color: #374151;
+}
+
+.copy-button:active {
+  transform: scale(0.95);
+}
+
+/* Show copy button on row hover */
+.pf-v6-c-table tbody tr:hover .copy-button {
+  opacity: 1;
+}
+
+/* When copied, always show and make it green */
+.copy-button[title="Copied!"] {
+  opacity: 1 !important;
+  color: #10b981;
+  animation: copySuccess 0.3s ease;
+}
+
+@keyframes copySuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

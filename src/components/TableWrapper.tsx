@@ -8,6 +8,8 @@ import {
   Td,
   Caption,
 } from "@patternfly/react-table";
+import { CopyIcon, CheckIcon } from "@patternfly/react-icons";
+import React, { useState } from "react";
 
 import ErrorPlaceholder from "./ErrorPlaceholder";
 
@@ -25,6 +27,33 @@ interface TableWrapperProps {
   className?: string;
   onRowClick?: (rowData: Record<string, string | number | null>) => void;
 }
+
+// Copy button component with visual feedback
+const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="copy-button"
+      title={copied ? 'Copied!' : 'Copy to clipboard'}
+      aria-label={copied ? 'Copied' : 'Copy to clipboard'}
+    >
+      {copied ? <CheckIcon /> : <CopyIcon />}
+    </button>
+  );
+};
 
 const TableWrapper = (props: TableWrapperProps) => {
   const { title, id, fields, className, onRowClick } = props;
@@ -110,9 +139,27 @@ const TableWrapper = (props: TableWrapperProps) => {
                   style={onRowClick ? { cursor: 'pointer' } : undefined}
                   isHoverable={!!onRowClick}
                 >
-                  {columns.map((col, colIndex) => (
-                    <Td key={colIndex}>{row[col.key]}</Td>
-                  ))}
+                  {columns.map((col, colIndex) => {
+                    const cellValue = row[col.key];
+                    
+                    // Add copy button for ID, Name, URL, Email columns
+                    const isCopyableColumn = ['id', 'name', 'url', 'email', 'cluster'].some(
+                      keyword => col.key.toLowerCase().includes(keyword)
+                    );
+
+                    return (
+                      <Td key={colIndex}>
+                        {isCopyableColumn ? (
+                          <span className="cell-with-copy">
+                            <span className="cell-value">{cellValue}</span>
+                            <CopyButton text={String(cellValue)} />
+                          </span>
+                        ) : (
+                          cellValue
+                        )}
+                      </Td>
+                    );
+                  })}
                 </Tr>
               ))}
             </Tbody>
