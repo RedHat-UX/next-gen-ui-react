@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import TableWrapper from "../../components/TableWrapper";
 
@@ -494,6 +494,361 @@ describe("TableWrapper Component", () => {
       for (let i = 0; i < 5; i++) {
         expect(screen.getByTestId(`row-${i}`)).toBeInTheDocument();
       }
+    });
+  });
+
+  // ========== Copy Button Feature Tests ==========
+
+  describe("Copy Button functionality", () => {
+    // Mock clipboard API
+    const originalClipboard = { ...global.navigator.clipboard };
+    const mockWriteText = vitest.fn();
+
+    beforeEach(() => {
+      mockWriteText.mockClear();
+      mockWriteText.mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: mockWriteText },
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: originalClipboard,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it("should render copy buttons for copyable columns (ID)", () => {
+      const dataWithID = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Cluster ID",
+            data_path: "cluster.id",
+            data: ["cluster-123"],
+          },
+          {
+            name: "Status",
+            data_path: "cluster.status",
+            data: ["Active"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithID} />);
+
+      // Copy button should exist for ID column
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBeGreaterThan(0);
+    });
+
+    it("should render copy buttons for copyable columns (Name)", () => {
+      const dataWithName = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Cluster Name",
+            data_path: "cluster.name",
+            data: ["Production Cluster"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithName} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBeGreaterThan(0);
+    });
+
+    it("should render copy buttons for copyable columns (URL)", () => {
+      const dataWithURL = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Console URL",
+            data_path: "cluster.url",
+            data: ["https://console.redhat.com"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithURL} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBeGreaterThan(0);
+    });
+
+    it("should render copy buttons for copyable columns (Email)", () => {
+      const dataWithEmail = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Owner Email",
+            data_path: "owner.email",
+            data: ["admin@example.com"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithEmail} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBeGreaterThan(0);
+    });
+
+    it("should NOT render copy buttons for non-copyable columns", () => {
+      const nonCopyableData = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Status",
+            data_path: "status",
+            data: ["Active"],
+          },
+          {
+            name: "Count",
+            data_path: "count",
+            data: [42],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...nonCopyableData} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBe(0);
+    });
+
+    it("should copy cell value to clipboard when copy button is clicked", async () => {
+      const dataWithID = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "ID",
+            data_path: "id",
+            data: ["test-id-123"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithID} />);
+
+      const copyButton = container.querySelector('.copy-button') as HTMLElement;
+      expect(copyButton).toBeInTheDocument();
+
+      fireEvent.click(copyButton);
+
+      await waitFor(() => {
+        expect(mockWriteText).toHaveBeenCalledWith("test-id-123");
+      });
+    });
+
+    it("should show success icon (CheckIcon) after successful copy", async () => {
+      const dataWithID = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "ID",
+            data_path: "id",
+            data: ["test-id-123"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithID} />);
+
+      const copyButton = container.querySelector('.copy-button') as HTMLElement;
+      fireEvent.click(copyButton);
+
+      await waitFor(() => {
+        expect(copyButton.getAttribute('title')).toBe('Copied!');
+      });
+    });
+
+    it("should stop event propagation to prevent row click", async () => {
+      const mockOnRowClick = vitest.fn();
+      const dataWithID = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "ID",
+            data_path: "id",
+            data: ["test-id"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithID} />);
+
+      const copyButton = container.querySelector('.copy-button') as HTMLElement;
+      
+      // Create a spy on stopPropagation
+      const clickEvent = new MouseEvent('click', { bubbles: true });
+      const stopPropagationSpy = vitest.spyOn(clickEvent, 'stopPropagation');
+      
+      copyButton.dispatchEvent(clickEvent);
+
+      expect(stopPropagationSpy).toHaveBeenCalled();
+    });
+
+    it("should render multiple copy buttons for multiple copyable columns", () => {
+      const multiCopyableData = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Cluster ID",
+            data_path: "cluster.id",
+            data: ["id-1", "id-2"],
+          },
+          {
+            name: "Cluster Name",
+            data_path: "cluster.name",
+            data: ["name-1", "name-2"],
+          },
+          {
+            name: "Status",
+            data_path: "status",
+            data: ["Active", "Inactive"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...multiCopyableData} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      // 2 rows × 2 copyable columns = 4 copy buttons
+      expect(copyButtons.length).toBe(4);
+    });
+
+    it("should handle case-insensitive column detection", () => {
+      const mixedCaseData = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "CLUSTER_ID",
+            data_path: "cluster.id",
+            data: ["id-1"],
+          },
+          {
+            name: "ClusterName",
+            data_path: "cluster.name",
+            data: ["name-1"],
+          },
+          {
+            name: "email_ADDRESS",
+            data_path: "email",
+            data: ["test@example.com"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...mixedCaseData} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBe(3);
+    });
+
+    it("should render copy button with cell value in wrapper", () => {
+      const dataWithID = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "ID",
+            data_path: "id",
+            data: ["test-value"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithID} />);
+
+      const cellWrapper = container.querySelector('.cell-with-copy');
+      expect(cellWrapper).toBeInTheDocument();
+
+      const cellValue = container.querySelector('.cell-value');
+      expect(cellValue).toBeInTheDocument();
+      expect(cellValue?.textContent).toBe("test-value");
+    });
+
+    it("should have correct aria-label for accessibility", () => {
+      const dataWithID = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "ID",
+            data_path: "id",
+            data: ["test-id"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...dataWithID} />);
+
+      const copyButton = container.querySelector('.copy-button') as HTMLElement;
+      expect(copyButton.getAttribute('aria-label')).toBe('Copy to clipboard');
+    });
+
+    it("should work with 'cluster' keyword in column name", () => {
+      const clusterData = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Cluster",
+            data_path: "cluster",
+            data: ["my-cluster"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...clusterData} />);
+
+      const copyButtons = container.querySelectorAll('.copy-button');
+      expect(copyButtons.length).toBeGreaterThan(0);
+    });
+
+    it("should render copy button for empty cell values", () => {
+      const emptyData = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "ID",
+            data_path: "id",
+            data: [""],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...emptyData} />);
+
+      // Copy button should still render for empty values
+      const copyButton = container.querySelector('.copy-button') as HTMLElement;
+      expect(copyButton).toBeInTheDocument();
+    });
+
+    it("should render copy button for numeric values", () => {
+      const numberData = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "User ID",
+            data_path: "user.id",
+            data: [12345],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...numberData} />);
+
+      // Copy button should render for numeric values
+      const copyButton = container.querySelector('.copy-button') as HTMLElement;
+      expect(copyButton).toBeInTheDocument();
+      
+      // Verify the cell displays the number
+      expect(screen.getByText("12345")).toBeInTheDocument();
     });
   });
 });
