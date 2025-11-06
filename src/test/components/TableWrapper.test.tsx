@@ -496,4 +496,201 @@ describe("TableWrapper Component", () => {
       }
     });
   });
+
+  // ========== Copy to Clipboard Feature Tests ==========
+
+  describe("copy to clipboard functionality", () => {
+    it("should render ClipboardCopy for string columns", () => {
+      const copyableData = {
+        ...mockFieldsData,
+        fields: [
+          { name: "User ID", data_path: "user.id", data: ["12345"] },
+          { name: "Name", data_path: "user.name", data: ["John Doe"] },
+          {
+            name: "Email",
+            data_path: "user.email",
+            data: ["john@example.com"],
+          },
+          {
+            name: "Profile URL",
+            data_path: "user.url",
+            data: ["https://example.com"],
+          },
+          {
+            name: "Cluster Name",
+            data_path: "cluster.name",
+            data: ["prod-cluster-01"],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...copyableData} />);
+
+      // ClipboardCopy components should be present for string columns
+      const clipboardCopies = container.querySelectorAll(
+        ".pf-v6-c-clipboard-copy"
+      );
+      expect(clipboardCopies.length).toBeGreaterThan(0);
+    });
+
+    it("should render ClipboardCopy for primitive types (strings, numbers, booleans)", () => {
+      const primitiveData = {
+        ...mockFieldsData,
+        fields: [
+          { name: "Year", data_path: "year", data: [2024] },
+          { name: "Count", data_path: "count", data: [42] },
+          { name: "Is Active", data_path: "active", data: [true] },
+          { name: "Name", data_path: "name", data: ["Test"] },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...primitiveData} />);
+
+      // ClipboardCopy components should be present for all primitive types
+      const clipboardCopies = container.querySelectorAll(
+        ".pf-v6-c-clipboard-copy"
+      );
+      // All 4 columns should have ClipboardCopy
+      expect(clipboardCopies.length).toBe(4);
+
+      // Values should be displayed
+      expect(screen.getByText("2024")).toBeInTheDocument();
+      expect(screen.getByText("42")).toBeInTheDocument();
+      expect(screen.getByText("true")).toBeInTheDocument();
+      expect(screen.getByText("Test")).toBeInTheDocument();
+    });
+
+    it("should render mixed content - all text data copyable including arrays", () => {
+      const mixedData = {
+        ...mockFieldsData,
+        fields: [
+          { name: "User ID", data_path: "user.id", data: ["12345"] },
+          { name: "Age", data_path: "user.age", data: [30] },
+          {
+            name: "Email",
+            data_path: "user.email",
+            data: ["user@example.com"],
+          },
+          { name: "Status", data_path: "user.status", data: ["Active"] },
+          { name: "Tags", data_path: "tags", data: [["tag1", "tag2"]] },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...mixedData} />);
+
+      // All columns should have ClipboardCopy (including arrays converted to strings)
+      // User ID, Age, Email, Status, Tags = 5 copyable columns
+      const clipboardCopies = container.querySelectorAll(
+        ".pf-v6-c-clipboard-copy"
+      );
+      expect(clipboardCopies.length).toBe(5);
+
+      // All values should be visible
+      expect(screen.getByText("30")).toBeInTheDocument();
+      expect(screen.getByText("Active")).toBeInTheDocument();
+      expect(screen.getByText("tag1, tag2")).toBeInTheDocument(); // Array is displayed joined
+    });
+
+    it("should not trigger row click when clicking copy button", () => {
+      const mockOnRowClick = vitest.fn();
+      const copyableData = {
+        ...mockFieldsData,
+        fields: [
+          { name: "User ID", data_path: "user.id", data: ["12345"] },
+          { name: "Name", data_path: "user.name", data: ["John Doe"] },
+        ],
+      };
+
+      const { container } = render(
+        <TableWrapper {...copyableData} onRowClick={mockOnRowClick} />
+      );
+
+      // Find the copy button
+      const copyButton = container.querySelector(
+        ".pf-v6-c-clipboard-copy__group button"
+      );
+
+      if (copyButton) {
+        fireEvent.click(copyButton);
+
+        // onRowClick should NOT be called when clicking the copy button
+        expect(mockOnRowClick).not.toHaveBeenCalled();
+      }
+    });
+
+    it("should detect copyable columns based on data type, not column name", () => {
+      const mixedTypes = {
+        ...mockFieldsData,
+        fields: [
+          { name: "SomeId", data_path: "id", data: [123] }, // number - copyable
+          { name: "SomeName", data_path: "name", data: ["john"] }, // string - copyable
+          { name: "Random", data_path: "random", data: ["test"] }, // string - copyable
+          { name: "Count", data_path: "count", data: [42] }, // number - copyable
+          { name: "Items", data_path: "items", data: [["a", "b"]] }, // array - copyable
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...mixedTypes} />);
+
+      // All columns should have ClipboardCopy (primitives and arrays)
+      const clipboardCopies = container.querySelectorAll(
+        ".pf-v6-c-clipboard-copy"
+      );
+      expect(clipboardCopies.length).toBe(5);
+    });
+
+    it("should handle multiple rows with copyable primitive columns", () => {
+      const multiRowCopyable = {
+        ...mockFieldsData,
+        fields: [
+          {
+            name: "Email",
+            data_path: "email",
+            data: ["user1@test.com", "user2@test.com", "user3@test.com"],
+          },
+          {
+            name: "Name",
+            data_path: "name",
+            data: ["Alice", "Bob", "Charlie"],
+          },
+          {
+            name: "Age",
+            data_path: "age",
+            data: [25, 30, 35],
+          },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...multiRowCopyable} />);
+
+      // Should have ClipboardCopy for each cell in primitive columns
+      const clipboardCopies = container.querySelectorAll(
+        ".pf-v6-c-clipboard-copy"
+      );
+      // 3 rows * 3 primitive columns = 9 ClipboardCopy components
+      expect(clipboardCopies.length).toBe(9);
+    });
+
+    it("should show ClipboardCopy for array data (displayed as comma-separated strings)", () => {
+      const arrayData = {
+        ...mockFieldsData,
+        fields: [
+          { name: "Tags", data_path: "tags", data: [["tag1", "tag2"]] },
+          { name: "Name", data_path: "name", data: ["John"] },
+        ],
+      };
+
+      const { container } = render(<TableWrapper {...arrayData} />);
+
+      // Both columns should have ClipboardCopy (string and array)
+      const clipboardCopies = container.querySelectorAll(
+        ".pf-v6-c-clipboard-copy"
+      );
+      expect(clipboardCopies.length).toBe(2);
+
+      // Verify the array is displayed as a joined string
+      expect(screen.getByText("tag1, tag2")).toBeInTheDocument();
+      expect(screen.getByText("John")).toBeInTheDocument();
+    });
+  });
 });

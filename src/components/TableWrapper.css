@@ -1,0 +1,27 @@
+.pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy {
+  background-color: unset;
+}
+
+.pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy
+  .pf-v6-c-clipboard-copy__actions {
+  opacity: 0;
+}
+
+.pf-v6-c-table
+  tbody
+  td:hover
+  .pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy
+  .pf-v6-c-clipboard-copy__actions {
+  opacity: 1;
+}
+
+.pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy:focus-within
+  .pf-v6-c-clipboard-copy__actions,
+.pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy:active
+  .pf-v6-c-clipboard-copy__actions,
+.pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy
+  .pf-v6-c-clipboard-copy__actions:focus,
+.pf-v6-c-clipboard-copy.pf-m-inline.ngui-clipboard-copy
+  .pf-v6-c-clipboard-copy__actions:active {
+  opacity: 1;
+}
