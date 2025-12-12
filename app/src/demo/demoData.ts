@@ -84,7 +84,7 @@ export const setOfCardsDemoTwoCards = {
 };
 
 export const tableDemo = {
-  component: "table" as const,
+  component: "data-view" as const,
   id: "table-1",
   title: "Users",
   fields: [
@@ -99,7 +99,7 @@ export const tableDemo = {
 };
 
 export const tableDemoComplexData = {
-  component: "table" as const,
+  component: "data-view" as const,
   id: "table-2",
   title: "System Metrics",
   fields: [
@@ -173,7 +173,7 @@ export const dynamicDemoImage = {
 };
 
 export const dynamicDemoTable = {
-  component: "table" as const,
+  component: "data-view" as const,
   key: "table-demo",
   props: tableDemo,
 };
@@ -457,7 +457,7 @@ export const setOfCardsDemoWithImages = {
 };
 
 export const tableDemoServerMetrics = {
-  component: "table" as const,
+  component: "data-view" as const,
   id: "table-3",
   title: "Server Performance Metrics",
   fields: [
@@ -726,7 +726,7 @@ export const imageLogoGrid = {
 };
 
 export const tableDemoEmpty = {
-  component: "table" as const,
+  component: "data-view" as const,
   id: "table-empty",
   title: "No Data Available",
   fields: [
@@ -856,4 +856,451 @@ export const emptyStateCustomIcon = {
   content: "This demonstrates a custom icon configuration.",
   variant: "info" as const,
   icon: "CheckCircleIcon",
+};
+
+// DataView demos
+export const dataViewRepositories = {
+  component: "data-view" as const,
+  id: "dataview-repos",
+  fields: [
+    {
+      name: "Repository",
+      data_path: "repositories.name",
+      data: [
+        "next-gen-ui-react",
+        "patternfly-react",
+        "patternfly",
+        "react-data-view",
+        "react-charts",
+        "react-table",
+      ],
+    },
+    {
+      name: "Branch",
+      data_path: "repositories.branch",
+      data: ["main", "main", "main", "development", "main", "feature-branch"],
+    },
+    {
+      name: "Pull Requests",
+      data_path: "repositories.prs",
+      data: ["3 open", "12 open", "8 open", "2 open", "5 open", "1 open"],
+    },
+    {
+      name: "Workspace",
+      data_path: "repositories.workspace",
+      data: [
+        "UI Components",
+        "UI Components",
+        "Design System",
+        "Extensions",
+        "Extensions",
+        "Core",
+      ],
+    },
+    {
+      name: "Last Commit",
+      data_path: "repositories.lastCommit",
+      data: [
+        "2 hours ago",
+        "1 day ago",
+        "3 hours ago",
+        "5 days ago",
+        "2 days ago",
+        "1 week ago",
+      ],
+    },
+  ],
+  perPage: 5,
+  enableFilters: true,
+  enablePagination: true,
+  enableSort: true,
+};
+
+export const dataViewUsers = {
+  component: "data-view" as const,
+  id: "dataview-users",
+  fields: [
+    {
+      name: "Name",
+      data_path: "users.name",
+      data: [
+        "Alice Johnson",
+        "Bob Smith",
+        "Carol Williams",
+        "David Brown",
+        "Eve Davis",
+        "Frank Miller",
+        "Grace Wilson",
+        "Henry Moore",
+        "Ivy Taylor",
+        "Jack Anderson",
+      ],
+    },
+    {
+      name: "Email",
+      data_path: "users.email",
+      data: [
+        "alice.j@example.com",
+        "bob.smith@example.com",
+        "carol.w@example.com",
+        "david.b@example.com",
+        "eve.d@example.com",
+        "frank.m@example.com",
+        "grace.w@example.com",
+        "henry.m@example.com",
+        "ivy.t@example.com",
+        "jack.a@example.com",
+      ],
+    },
+    {
+      name: "Role",
+      data_path: "users.role",
+      data: [
+        "Admin",
+        "Developer",
+        "Designer",
+        "Developer",
+        "QA Engineer",
+        "Product Manager",
+        "Developer",
+        "DevOps",
+        "Designer",
+        "Developer",
+      ],
+    },
+    {
+      name: "Status",
+      data_path: "users.status",
+      data: [
+        "Active",
+        "Active",
+        "Active",
+        "Inactive",
+        "Active",
+        "Active",
+        "Active",
+        "Active",
+        "Inactive",
+        "Active",
+      ],
+    },
+    {
+      name: "Last Login",
+      data_path: "users.lastLogin",
+      data: [
+        "5 mins ago",
+        "2 hours ago",
+        "1 day ago",
+        "2 weeks ago",
+        "30 mins ago",
+        "4 hours ago",
+        "Yesterday",
+        "3 days ago",
+        "1 month ago",
+        "Just now",
+      ],
+    },
+  ],
+  perPage: 10,
+  enableFilters: true,
+  enablePagination: true,
+  enableSort: true,
+};
+
+export const dataViewServers = {
+  component: "data-view" as const,
+  id: "dataview-servers",
+  fields: [
+    {
+      name: "Server Name",
+      data_path: "servers.name",
+      data: [
+        "prod-web-01",
+        "prod-web-02",
+        "prod-db-01",
+        "staging-web-01",
+        "dev-web-01",
+      ],
+    },
+    {
+      name: "IP Address",
+      data_path: "servers.ip",
+      data: [
+        "192.168.1.10",
+        "192.168.1.11",
+        "192.168.1.20",
+        "192.168.2.10",
+        "192.168.3.10",
+      ],
+    },
+    {
+      name: "Environment",
+      data_path: "servers.env",
+      data: [
+        "Production",
+        "Production",
+        "Production",
+        "Staging",
+        "Development",
+      ],
+    },
+    {
+      name: "CPU Usage",
+      data_path: "servers.cpu",
+      data: ["45%", "67%", "23%", "12%", "8%"],
+    },
+    {
+      name: "Memory",
+      data_path: "servers.memory",
+      data: [
+        "8GB / 16GB",
+        "12GB / 16GB",
+        "4GB / 32GB",
+        "2GB / 8GB",
+        "1GB / 8GB",
+      ],
+    },
+    {
+      name: "Status",
+      data_path: "servers.status",
+      data: ["Running", "Running", "Running", "Running", "Stopped"],
+    },
+  ],
+  perPage: 10,
+  enableFilters: true,
+  enablePagination: true,
+  enableSort: true,
+};
+
+export const dataViewSimple = {
+  component: "data-view" as const,
+  id: "dataview-simple",
+  fields: [
+    {
+      name: "Product",
+      data_path: "products.name",
+      data: ["Laptop", "Mouse", "Keyboard"],
+    },
+    {
+      name: "Price",
+      data_path: "products.price",
+      data: ["$999", "$25", "$79"],
+    },
+    {
+      name: "Stock",
+      data_path: "products.stock",
+      data: ["15", "50", "32"],
+    },
+  ],
+  perPage: 5,
+  enableFilters: false,
+  enablePagination: false,
+  enableSort: true,
+};
+
+// DataView with minimal configuration to test defaults (12 items - pagination enabled)
+export const dataViewMinimal = {
+  component: "data-view" as const,
+  id: "dataview-minimal",
+  fields: [
+    {
+      name: "Item",
+      data_path: "items.name",
+      data: [
+        "Item A",
+        "Item B",
+        "Item C",
+        "Item D",
+        "Item E",
+        "Item F",
+        "Item G",
+        "Item H",
+        "Item I",
+        "Item J",
+        "Item K",
+        "Item L",
+      ],
+    },
+    {
+      name: "Category",
+      data_path: "items.category",
+      data: [
+        "Electronics",
+        "Books",
+        "Clothing",
+        "Food",
+        "Sports",
+        "Home",
+        "Garden",
+        "Toys",
+        "Music",
+        "Health",
+        "Beauty",
+        "Tools",
+      ],
+    },
+    {
+      name: "Quantity",
+      data_path: "items.quantity",
+      data: [10, 25, 8, 50, 15, 32, 18, 45, 7, 22, 38, 12],
+    },
+  ],
+  // No optional props - should use all defaults:
+  // perPage: 5, enableFilters: auto (true for >5 items), enablePagination: auto (true for >5 items), enableSort: true
+};
+
+// DataView with minimal configuration and 5 items (filters & pagination auto-disabled)
+export const dataViewMinimalSmall = {
+  component: "data-view" as const,
+  id: "dataview-minimal-small",
+  fields: [
+    {
+      name: "Task",
+      data_path: "tasks.name",
+      data: [
+        "Setup Development Environment",
+        "Write Unit Tests",
+        "Code Review",
+        "Deploy to Staging",
+        "Update Documentation",
+      ],
+    },
+    {
+      name: "Status",
+      data_path: "tasks.status",
+      data: ["Complete", "In Progress", "Pending", "Complete", "In Progress"],
+    },
+    {
+      name: "Priority",
+      data_path: "tasks.priority",
+      data: ["High", "Medium", "Low", "Medium", "Low"],
+    },
+  ],
+  // No optional props - should use all defaults:
+  // perPage: 5, enableFilters: auto (false for ≤5 items), enablePagination: auto (false for ≤5 items), enableSort: true
+};
+
+// DataView demonstrating numeric sorting
+export const dataViewNumericSort = {
+  component: "data-view" as const,
+  id: "dataview-numeric-sort",
+  fields: [
+    {
+      name: "ID",
+      data_path: "items.id",
+      data: [1, 2, 10, 20, 100, 5, 50, 3, 30, 7],
+    },
+    {
+      name: "Size",
+      data_path: "items.size",
+      data: [
+        "1GB",
+        "2GB",
+        "10GB",
+        "20GB",
+        "100GB",
+        "5GB",
+        "50GB",
+        "3GB",
+        "30GB",
+        "7GB",
+      ],
+    },
+    {
+      name: "Price",
+      data_path: "items.price",
+      data: [
+        "$1.50",
+        "$2.00",
+        "$10.99",
+        "$20.50",
+        "$100.00",
+        "$5.25",
+        "$50.75",
+        "$3.99",
+        "$30.00",
+        "$7.49",
+      ],
+    },
+    {
+      name: "Count",
+      data_path: "items.count",
+      data: [
+        "1 item",
+        "2 items",
+        "10 items",
+        "20 items",
+        "100 items",
+        "5 items",
+        "50 items",
+        "3 items",
+        "30 items",
+        "7 items",
+      ],
+    },
+  ],
+  perPage: 5,
+  // Demonstrates smart numeric sorting: click column headers to sort
+  // - Numbers sort numerically (1, 2, 3, 5, 7, 10...) not alphabetically (1, 10, 100, 2, 20...)
+  // - Currency values ($1.50, $2.00, $10.99) sort by numeric value, not string
+  // - Handles units (1GB, 10GB, 100GB) and counts (1 item, 10 items) correctly
+};
+
+// DataView demonstrating ISO date sorting
+export const dataViewDateSort = {
+  component: "data-view" as const,
+  id: "dataview-date-sort",
+  fields: [
+    {
+      name: "Event",
+      data_path: "events.name",
+      data: [
+        "Project Kickoff",
+        "Design Review",
+        "Development Sprint",
+        "QA Testing",
+        "Production Deploy",
+        "Retrospective",
+      ],
+    },
+    {
+      name: "Date",
+      data_path: "events.date",
+      data: [
+        "2025-01-15",
+        "2025-02-10",
+        "2024-12-20",
+        "2025-03-05",
+        "2025-04-01",
+        "2025-04-15",
+      ],
+    },
+    {
+      name: "Time",
+      data_path: "events.time",
+      data: [
+        "2025-01-15T09:00:00Z",
+        "2025-02-10T14:30:00Z",
+        "2024-12-20T10:15:00Z",
+        "2025-03-05T16:45:00Z",
+        "2025-04-01T08:00:00Z",
+        "2025-04-15T13:20:00Z",
+      ],
+    },
+    {
+      name: "Status",
+      data_path: "events.status",
+      data: [
+        "Complete",
+        "Complete",
+        "Complete",
+        "In Progress",
+        "Pending",
+        "Pending",
+      ],
+    },
+  ],
+  perPage: 10,
+  // Demonstrates ISO date/time sorting: dates sort chronologically regardless of display order
+  // 2024-12-20 < 2025-01-15 < 2025-02-10 < 2025-03-05 < 2025-04-01 < 2025-04-15
 };

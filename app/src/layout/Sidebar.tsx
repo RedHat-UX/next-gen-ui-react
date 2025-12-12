@@ -1,38 +1,37 @@
 import {
+  Divider,
   PageSidebar,
   PageSidebarBody,
   Nav,
   NavList,
   NavItem,
-  NavExpandable,
 } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 
 import { componentRegistry } from "../config/componentRegistry";
 
 export default function Sidebar() {
+  // Separate DynamicComponents from other components
+  const dynamicComponent = componentRegistry.find((c) => c.id === "dynamic");
+  const regularComponents = componentRegistry.filter((c) => c.id !== "dynamic");
+
   const nav = (
     <Nav aria-label="Main navigation">
       <NavList>
         <NavItem itemId={0}>
           <Link to="/">Home</Link>
         </NavItem>
-        {componentRegistry.map((component, index) => (
-          <NavItem key={component.id} itemId={index + 1}>
+        {dynamicComponent && (
+          <NavItem itemId="dynamic">
+            <Link to={dynamicComponent.path}>{dynamicComponent.name}</Link>
+          </NavItem>
+        )}
+        <Divider />
+        {regularComponents.map((component, index) => (
+          <NavItem key={component.id} itemId={`regular-${index}`}>
             <Link to={component.path}>{component.name}</Link>
           </NavItem>
         ))}
-        <NavExpandable
-          title="Non-React Integration"
-          groupId="integration-examples"
-        >
-          <NavItem itemId="standalone-example">
-            <Link to="/examples/standalone">Standalone Bundle</Link>
-          </NavItem>
-          <NavItem itemId="webcomponents-example">
-            <Link to="/examples/webcomponents">Web Components</Link>
-          </NavItem>
-        </NavExpandable>
       </NavList>
     </Nav>
   );

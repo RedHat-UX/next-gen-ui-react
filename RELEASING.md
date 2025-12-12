@@ -168,7 +168,7 @@ It runs:
 - Type checking
 - Linting
 - Format checking
-- Tests on Node.js 18 and 20
+- Tests on Node.js 20
 - Package build
 - Demo app build
 

@@ -4,10 +4,10 @@ import "@testing-library/jest-dom";
 import DynamicComponent from "../../components/DynamicComponents";
 
 describe("DynamicComponent", () => {
-  it("should render table component with fields", () => {
+  it("should render table component with fields (backwards compatibility)", () => {
     const tableConfig = {
       component: "table",
-      title: "Test Table",
+      title: "Test Table", // Title is ignored in DataViewWrapper (backwards compatibility)
       id: "test-table-id",
       fields: [
         {
@@ -25,10 +25,7 @@ describe("DynamicComponent", () => {
 
     render(<DynamicComponent config={tableConfig} />);
 
-    // Check that the title appears in the table caption
-    const tableCaption = screen.getByRole("grid").querySelector("caption");
-    expect(tableCaption).toHaveTextContent("Test Table");
-
+    // DataViewWrapper renders the data (backwards compatibility: table -> DataViewWrapper)
     expect(screen.getByText("Name")).toBeInTheDocument();
     expect(screen.getByText("Age")).toBeInTheDocument();
     expect(screen.getByText("John Doe")).toBeInTheDocument();

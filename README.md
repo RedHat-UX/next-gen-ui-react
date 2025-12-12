@@ -12,7 +12,7 @@ This module is part of the [Next Gen UI Agent project](https://github.com/RedHat
 ## Provides:
 
 - Rendering for [Next Gen UI Dynamic Componets](https://redhat-ux.github.io/next-gen-ui-agent/guide/data_ui_blocks/dynamic_components/) using React components:
-  - Implemented components: `one-card`, `image`, `table`, `video-player`, `set-of-cards`, `chart-bar`, `chart-line`, `chart-pie`, `chart-donut`, `chart-mirrored-bar`
+  - Implemented components: `one-card`, `image`, `data-view` (or `table` for backwards compatibility), `video-player`, `set-of-cards`, `chart-bar`, `chart-line`, `chart-pie`, `chart-donut`, `chart-mirrored-bar`
   - `video-player` supports YouTube video URLs and direct video file URLs
   - `set-of-cards` displays multiple OneCard components in an auto-aligned grid layout
   - Chart components support multiple data series with interactive legends and tooltips
@@ -21,7 +21,7 @@ This module is part of the [Next Gen UI Agent project](https://github.com/RedHat
 - Patternfly React Components
   - `OneCardWrapper`
   - `ImageComponent`
-  - `TableWrapper`
+  - `DataViewWrapper`
   - `VideoPlayerWrapper`
   - `SetOfCardsWrapper`
   - `ChartComponent` (Bar, Line, Pie, Donut, Mirrored Bar)
@@ -106,14 +106,15 @@ function App() {
 }
 ```
 
-### Table Component
+### Data View Component
+
+The Data View component provides a feature-rich table with sorting, filtering, and pagination. The `component: "table"` is supported for backwards compatibility and uses DataViewWrapper.
 
 ```jsx
 import DynamicComponent from "@rhngui/patternfly-react-renderer";
 
-const tableConfig = {
-  component: "table",
-  title: "Movie Statistics",
+const dataViewConfig = {
+  component: "data-view", // Use "table" for backwards compatibility
   id: "movie-stats-table",
   fields: [
     {
@@ -141,10 +142,14 @@ const tableConfig = {
       data: [8.3, 8.1, 8.0],
     },
   ],
+  perPage: 5,
+  enableFilters: true,
+  enablePagination: true,
+  enableSort: true,
 };
 
 function App() {
-  return <DynamicComponent config={tableConfig} />;
+  return <DynamicComponent config={dataViewConfig} />;
 }
 ```
 

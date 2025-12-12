@@ -6,7 +6,7 @@ Thanks for helping out. This guide covers how to add new components and contribu
 
 ### Prerequisites
 
-- Node 18 or higher
+- Node 20 or higher
 - npm 8 or higher
 - Git
 
@@ -300,10 +300,10 @@ The repo uses a dynamic rendering approach:
 ### Demo App Flow
 
 ```
-User visits /component/table
+User visits /component/dataview
   -> ComponentDemo.tsx loads componentRegistry
-  -> Finds "table" entry with examples
-  -> Renders TableWrapper with each example data
+  -> Finds "dataview" entry with examples
+  -> Renders DataViewWrapper with each example data
   -> Shows JSON config for each example
 ```
 

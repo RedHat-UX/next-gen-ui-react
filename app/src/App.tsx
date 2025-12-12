@@ -28,8 +28,6 @@ import { getComponentByPath } from "./config/componentRegistry";
 import Sidebar from "./layout/Sidebar";
 import ComponentDemo from "./pages/ComponentDemo";
 import Home from "./pages/Home";
-import StandaloneExample from "./pages/StandaloneExample";
-import WebComponentsExample from "./pages/WebComponentsExample";
 
 function AppContent() {
   const location = useLocation();
@@ -52,10 +50,6 @@ function AppContent() {
   };
 
   const getPageTitle = () => {
-    if (location.pathname === "/examples/standalone")
-      return "Standalone Bundle Example";
-    if (location.pathname === "/examples/webcomponents")
-      return "Web Components Example";
     const component = getComponentByPath(location.pathname);
     return component?.name || "Home";
   };
@@ -164,14 +158,6 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/component/:componentId" element={<ComponentDemo />} />
-            <Route
-              path="/examples/standalone"
-              element={<StandaloneExample />}
-            />
-            <Route
-              path="/examples/webcomponents"
-              element={<WebComponentsExample />}
-            />
           </Routes>
         </div>
       </PageSection>

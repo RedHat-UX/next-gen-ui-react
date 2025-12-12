@@ -1,12 +1,14 @@
+import DataViewWrapper from "@local-lib/components/DataViewWrapper";
 import DynamicComponents from "@local-lib/components/DynamicComponents";
 import EmptyStateWrapper from "@local-lib/components/EmptyStateWrapper";
 import ErrorPlaceholder from "@local-lib/components/ErrorPlaceholder";
 import ImageComponent from "@local-lib/components/ImageComponent";
 import OneCardWrapper from "@local-lib/components/OneCardWrapper";
 import SetOfCardsWrapper from "@local-lib/components/SetOfCardsWrapper";
-import TableWrapper from "@local-lib/components/TableWrapper";
 import VideoPlayerWrapper from "@local-lib/components/VideoPlayerWrapper";
 import {
+  Alert,
+  AlertVariant,
   CodeBlock,
   CodeBlockCode,
   Content,
@@ -28,13 +30,14 @@ const ChartComponent = lazy(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const componentMap: Record<string, React.ComponentType<any>> = {
   chart: ChartComponent,
+  dataview: DataViewWrapper,
   dynamic: DynamicComponents,
   emptystate: EmptyStateWrapper,
   error: ErrorPlaceholder,
   image: ImageComponent,
   onecard: OneCardWrapper,
   setofcards: SetOfCardsWrapper,
-  table: TableWrapper,
+  table: DataViewWrapper, // Backwards compatibility: table uses DataViewWrapper
   video: VideoPlayerWrapper,
 };
 
@@ -75,6 +78,29 @@ export default function ComponentDemo() {
 
   return (
     <div>
+      {componentId === "dynamic" && (
+        <Alert
+          variant={AlertVariant.info}
+          isInline
+          title="Dynamic Component Renderer"
+          style={{ marginBottom: 24 }}
+        >
+          <p>
+            The <strong>DynamicComponents</strong> component is a special
+            renderer that accepts a configuration object and dynamically renders
+            the appropriate component based on the <code>component</code> field
+            in the config. This allows you to render any of the available
+            components (charts, data views, cards, images, etc.) using a single
+            component with different configuration objects.
+          </p>
+          <p style={{ marginTop: 8, marginBottom: 0 }}>
+            This is useful when you have component configurations coming from an
+            API or configuration file, and you want to render them dynamically
+            without having to conditionally render different components in your
+            code.
+          </p>
+        </Alert>
+      )}
       {config.examples.map((example, index) => (
         <div key={index}>
           {index > 0 && <Divider style={{ marginTop: 32, marginBottom: 32 }} />}

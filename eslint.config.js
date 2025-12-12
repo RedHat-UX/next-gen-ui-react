@@ -7,7 +7,7 @@ import eslintPluginImport from "eslint-plugin-import";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: ["dist", "coverage", "app/dist", "app/public/webcomponents", "app/public/standalone"] },
+  { ignores: ["dist", "coverage", "app/dist"] },
   {
     extends: [
       js.configs.recommended,
