@@ -40,12 +40,15 @@ export default function Sidebar() {
             <Link to={component.path}>{component.name}</Link>
           </NavItem>
         ))}
-        <Divider />
         {registryComponent && (
           <NavItem itemId="registry">
             <Link to={registryComponent.path}>{registryComponent.name}</Link>
           </NavItem>
         )}
+        <Divider />
+        <NavItem itemId="pods-resource">
+          <Link to="/pods-resource">Pods Resource Usage demo</Link>
+        </NavItem>
         <NavItem itemId="performance">
           <Link to="/performance">HandlerRegistry demo</Link>
         </NavItem>

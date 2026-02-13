@@ -15,16 +15,19 @@ describe("DataViewWrapper Component", () => {
     id: "dataview-test",
     fields: [
       {
+        id: "repository",
         name: "Repository",
         data_path: "repositories.name",
         data: ["repo-one", "repo-two", "repo-three"],
       },
       {
+        id: "branch",
         name: "Branch",
         data_path: "repositories.branch",
         data: ["main", "develop", "feature"],
       },
       {
+        id: "status",
         name: "Status",
         data_path: "repositories.status",
         data: ["Active", "Active", "Inactive"],
@@ -61,6 +64,7 @@ describe("DataViewWrapper Component", () => {
       ...mockFieldsData,
       fields: [
         {
+          id: "tags",
           name: "Tags",
           data_path: "repo.tags",
           data: [["tag1", "tag2", "tag3"]],
@@ -79,6 +83,7 @@ describe("DataViewWrapper Component", () => {
       ...mockFieldsData,
       fields: [
         {
+          id: "name",
           name: "Name",
           data_path: "item.name",
           data: [null, "value2"],
@@ -141,16 +146,19 @@ describe("DataViewWrapper Component", () => {
       ...mockFieldsData,
       fields: [
         {
+          id: "stringField",
           name: "String Field",
           data_path: "test.string",
           data: ["test string"],
         },
         {
+          id: "numberField",
           name: "Number Field",
           data_path: "test.number",
           data: [123],
         },
         {
+          id: "booleanField",
           name: "Boolean Field",
           data_path: "test.boolean",
           data: [true],
@@ -190,11 +198,13 @@ describe("DataViewWrapper Component", () => {
       ...mockFieldsData,
       fields: [
         {
+          id: "id",
           name: "ID",
           data_path: "id",
           data: Array.from({ length: 50 }, (_, i) => i + 1),
         },
         {
+          id: "value",
           name: "Value",
           data_path: "value",
           data: Array.from({ length: 50 }, (_, i) => `value-${i + 1}`),
@@ -231,11 +241,13 @@ describe("DataViewWrapper Component", () => {
       id: "minimal-test",
       fields: [
         {
+          id: "item",
           name: "Item",
           data_path: "items.name",
           data: ["Item 1", "Item 2", "Item 3"],
         },
         {
+          id: "value",
           name: "Value",
           data_path: "items.value",
           data: [100, 200, 300],
@@ -264,6 +276,7 @@ describe("DataViewWrapper Component", () => {
       id: "small-data-test",
       fields: [
         {
+          id: "item",
           name: "Item",
           data_path: "items.name",
           data: ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"],
@@ -293,6 +306,7 @@ describe("DataViewWrapper Component", () => {
       id: "large-data-test",
       fields: [
         {
+          id: "item",
           name: "Item",
           data_path: "items.name",
           data: ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6"],
@@ -317,6 +331,7 @@ describe("DataViewWrapper Component", () => {
       id: "small-with-pagination",
       fields: [
         {
+          id: "item",
           name: "Item",
           data_path: "items.name",
           data: ["Item 1", "Item 2", "Item 3"],
@@ -342,11 +357,13 @@ describe("DataViewWrapper Component", () => {
       id: "small-data-no-filters",
       fields: [
         {
+          id: "name",
           name: "Name",
           data_path: "items.name",
           data: ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"],
         },
         {
+          id: "value",
           name: "Value",
           data_path: "items.value",
           data: [10, 20, 30, 40, 50],
@@ -371,6 +388,7 @@ describe("DataViewWrapper Component", () => {
       id: "large-data-with-filters",
       fields: [
         {
+          id: "name",
           name: "Name",
           data_path: "items.name",
           data: ["A", "B", "C", "D", "E", "F"],
@@ -391,6 +409,7 @@ describe("DataViewWrapper Component", () => {
       id: "small-with-filters-explicit",
       fields: [
         {
+          id: "item",
           name: "Item",
           data_path: "items.name",
           data: ["Item 1", "Item 2"],
@@ -412,6 +431,7 @@ describe("DataViewWrapper Component", () => {
       id: "large-no-filters-explicit",
       fields: [
         {
+          id: "item",
           name: "Item",
           data_path: "items.name",
           data: ["A", "B", "C", "D", "E", "F", "G"],
@@ -433,11 +453,13 @@ describe("DataViewWrapper Component", () => {
       id: "numeric-sort-test",
       fields: [
         {
+          id: "id",
           name: "ID",
           data_path: "items.id",
           data: [1, 2, 10, 20, 100, 3],
         },
         {
+          id: "name",
           name: "Name",
           data_path: "items.name",
           data: ["A", "B", "C", "D", "E", "F"],
@@ -463,6 +485,7 @@ describe("DataViewWrapper Component", () => {
       id: "mixed-numeric-sort",
       fields: [
         {
+          id: "size",
           name: "Size",
           data_path: "items.size",
           data: ["1GB", "10GB", "2GB", "20GB"],
@@ -487,6 +510,7 @@ describe("DataViewWrapper Component", () => {
       id: "decimal-sort",
       fields: [
         {
+          id: "price",
           name: "Price",
           data_path: "items.price",
           data: [1.5, 10.2, 2.8, 20.1, 100.5, 3.3],
@@ -510,6 +534,7 @@ describe("DataViewWrapper Component", () => {
       id: "negative-sort",
       fields: [
         {
+          id: "temperature",
           name: "Temperature",
           data_path: "items.temp",
           data: [-10, 5, -2, 20, -100, 0],
@@ -533,6 +558,7 @@ describe("DataViewWrapper Component", () => {
       id: "text-sort",
       fields: [
         {
+          id: "name",
           name: "Name",
           data_path: "items.name",
           data: ["Zebra", "Apple", "Mango", "Banana"],
@@ -557,6 +583,7 @@ describe("DataViewWrapper Component", () => {
       id: "mixed-column-sort",
       fields: [
         {
+          id: "value",
           name: "Value",
           data_path: "items.value",
           data: [
@@ -588,6 +615,7 @@ describe("DataViewWrapper Component", () => {
       id: "currency-sort",
       fields: [
         {
+          id: "price",
           name: "Price",
           data_path: "items.price",
           data: ["$100.00", "$2.00", "$50.00", "$10.00", "$1.50"],
@@ -613,6 +641,7 @@ describe("DataViewWrapper Component", () => {
       id: "multi-currency-sort",
       fields: [
         {
+          id: "amount",
           name: "Amount",
           data_path: "items.amount",
           data: ["£100", "€50", "$25", "¥1000", "£5"],
@@ -638,6 +667,7 @@ describe("DataViewWrapper Component", () => {
       id: "spaced-sort",
       fields: [
         {
+          id: "value",
           name: "Value",
           data_path: "items.value",
           data: ["  100", "  2", "  50", "  10"],
@@ -666,6 +696,7 @@ describe("DataViewWrapper Component", () => {
       id: "iso-date-sort",
       fields: [
         {
+          id: "date",
           name: "Date",
           data_path: "items.date",
           data: ["2025-12-31", "2025-01-15", "2025-04-22", "2024-11-30"],
@@ -698,6 +729,7 @@ describe("DataViewWrapper Component", () => {
       id: "iso-datetime-sort",
       fields: [
         {
+          id: "timestamp",
           name: "Timestamp",
           data_path: "items.timestamp",
           data: [
@@ -732,6 +764,7 @@ describe("DataViewWrapper Component", () => {
       id: "mixed-dates-sort",
       fields: [
         {
+          id: "created",
           name: "Created",
           data_path: "items.created",
           data: [
@@ -769,6 +802,7 @@ describe("DataViewWrapper Component", () => {
       id: "formatted-date-display",
       fields: [
         {
+          id: "date",
           name: "Date",
           data_path: "items.date",
           data: ["2025-04-22", "2025-01-15"],
@@ -812,11 +846,13 @@ describe("DataViewWrapper Component", () => {
             inputDataType={inputDataType}
             fields={[
               {
+                id: "repository",
                 name: "Repository",
                 data_path: "repositories.name",
                 data: ["repo-one", "repo-two"],
               },
               {
+                id: "branch",
                 name: "Branch",
                 data_path: "repositories.branch",
                 data: ["main", "develop"],
@@ -850,8 +886,10 @@ describe("DataViewWrapper Component", () => {
       expect(mockHandler).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
-          Repository: "repo-one",
-          Branch: "main",
+          fields: expect.objectContaining({
+            repository: expect.objectContaining({ value: "repo-one" }),
+            branch: expect.objectContaining({ value: "main" }),
+          }),
         })
       );
     });

@@ -6,4 +6,5 @@ export {
   type FormatterContextMatcher,
   type CellFormatter,
   type ItemClickHandler,
+  type ItemClickPayload,
 } from "./components/ComponentHandlerRegistry";

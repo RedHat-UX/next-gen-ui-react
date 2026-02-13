@@ -18,7 +18,11 @@ import { Tbody, Td, ThProps, Tr } from "@patternfly/react-table";
 import { FunctionComponent, useMemo } from "react";
 import type { MouseEvent, KeyboardEvent, ReactNode } from "react";
 
-import { useComponentHandlerRegistry } from "./ComponentHandlerRegistry";
+import {
+  type ItemDataFieldValue,
+  type ItemClickPayload,
+  useComponentHandlerRegistry,
+} from "./ComponentHandlerRegistry";
 import ErrorPlaceholder from "./ErrorPlaceholder";
 import { ISO_DATE_PATTERN_SORT } from "../utils/builtInFormatters";
 import { getDataTypeClass, sanitizeClassName } from "../utils/cssClassHelpers";
@@ -26,7 +30,7 @@ import { debugLog } from "../utils/debug";
 import { resolveFormatterForField } from "../utils/formatterResolution";
 
 interface FieldData {
-  id?: string;
+  id: string;
   name: string;
   data_path: string;
   data: (string | number | boolean | null | (string | number)[])[];
@@ -35,7 +39,8 @@ interface FieldData {
 interface DataViewColumn {
   label: string;
   key: string;
-  fieldId?: string;
+  fieldId: string;
+  dataPath?: string;
   sortable?: boolean;
   filterable?: boolean;
   formatter?: (
@@ -58,7 +63,7 @@ export interface DataViewWrapperProps {
   inputDataType?: string;
   onItemClick?: (
     event: React.MouseEvent | React.KeyboardEvent,
-    itemData: Record<string, string | number>
+    payload: ItemClickPayload
   ) => void;
 }
 
@@ -116,33 +121,33 @@ const DataViewWrapper: FunctionComponent<DataViewWrapperProps> = ({
     // Find the maximum number of data items across all fields
     const maxDataLength = Math.max(...fields.map((field) => field.data.length));
 
-    // Create columns from field names (formatter resolution shared with OneCardWrapper)
     const transformedColumns: DataViewColumn[] = fields.map((field) => {
       const resolvedFormatter = resolveFormatterForField(registry, field, {
         inputDataType,
         componentId: id,
       });
       return {
-        key: field.name,
+        key: field.id,
         label: field.name,
         fieldId: field.id,
+        dataPath: field.data_path,
         formatter: resolvedFormatter,
         sortable: true,
         filterable: true,
       };
     });
 
-    // Create rows based on the maximum data length
-    // Store raw values so the column formatter (from registry) does the formatting
     type CellValue = string | number | boolean | null | (string | number)[];
-    const transformedRows: Record<string, CellValue>[] = [];
+    const transformedRows: (Record<string, CellValue> & {
+      __originalIndex?: number;
+    })[] = [];
     for (let i = 0; i < maxDataLength; i++) {
-      const row: Record<string, CellValue> = {};
+      const row: Record<string, CellValue> & { __originalIndex?: number } = {};
+      row.__originalIndex = i;
       fields.forEach((field) => {
         const originalValue = field.data[i];
-        row[field.name] = originalValue as CellValue;
-        // Store original value with a special key for sorting
-        row[`__sort_${field.name}`] =
+        row[field.id] = originalValue as CellValue;
+        row[`__sort_${field.id}`] =
           originalValue === null || originalValue === undefined
             ? ""
             : Array.isArray(originalValue)
@@ -188,23 +193,24 @@ const DataViewWrapper: FunctionComponent<DataViewWrapperProps> = ({
 
   const { sortBy, direction, onSort } = useDataViewSort();
 
-  // Sort and filter data
+  // Sort and filter data (filters may be keyed by column key or label; resolve to column key for row lookup)
   const filteredData = useMemo(() => {
     return rows.filter((row) => {
-      return Object.keys(filters).every((key) => {
-        const filterValue = filters[key];
+      return Object.entries(filters).every(([filterKey, filterValue]) => {
         if (!filterValue) return true;
-        // Filter against both display value and original value
-        const displayValue = String(row[key] || "");
-        const sortKey = `__sort_${key}`;
-        const originalValue = String(row[sortKey] || "");
+        const colKey =
+          columns.find((c) => c.key === filterKey || c.label === filterKey)
+            ?.key ?? filterKey;
+        const displayValue = String(row[colKey] ?? "");
+        const sortKey = `__sort_${colKey}`;
+        const originalValue = String(row[sortKey] ?? "");
         return (
           displayValue.toLowerCase().includes(filterValue.toLowerCase()) ||
           originalValue.toLowerCase().includes(filterValue.toLowerCase())
         );
       });
     });
-  }, [rows, filters]);
+  }, [rows, filters, columns]);
 
   const sortedData = useMemo(() => {
     if (!sortBy || !direction) return filteredData;
@@ -292,6 +298,10 @@ const DataViewWrapper: FunctionComponent<DataViewWrapperProps> = ({
     const end = start + perPage;
 
     return sortedData.slice(start, end).map((row): DataViewTr => {
+      const index: number =
+        typeof (row as Record<string, unknown>).__originalIndex === "number"
+          ? ((row as Record<string, unknown>).__originalIndex as number)
+          : -1;
       // Create row with cells that have CSS classes based on field.id (only for data rows, not headers)
       const rowCells = columns.map((col) => {
         const cellValue = row[col.key];
@@ -329,32 +339,46 @@ const DataViewWrapper: FunctionComponent<DataViewWrapperProps> = ({
                 `handler:`,
                 resolvedOnItemClick
               );
-              // Create a clean row data object without internal sorting keys (coerce to string | number for handler API)
-              const rowData: Record<string, string | number> = {};
+              // Build payload: componentId, inputDataType, index once; fields keyed by field.id
+              const fields: Record<string, ItemDataFieldValue> = {};
               columns.forEach((col) => {
                 const v = row[col.key];
-                rowData[col.key] =
+                const coercedValue: string | number | boolean | null =
                   typeof v === "string" || typeof v === "number"
                     ? v
-                    : v == null
-                      ? ""
-                      : Array.isArray(v)
-                        ? v.join(", ")
-                        : String(v);
+                    : typeof v === "boolean"
+                      ? v
+                      : v == null
+                        ? ""
+                        : Array.isArray(v)
+                          ? (v.join(", ") as string)
+                          : String(v);
+                fields[col.key] = {
+                  id: col.fieldId,
+                  name: col.label,
+                  data_path: col.dataPath,
+                  value: coercedValue,
+                };
               });
+              const payload: ItemClickPayload = {
+                componentId: id,
+                inputDataType: inputDataType,
+                index,
+                fields,
+              };
               // Call handler - only if we have a MouseEvent (has 'button' property)
               // KeyboardEvent doesn't have 'button', so we skip it for now
               // The handler expects MouseEvent, so we only call it with MouseEvent
               if (event && "button" in event) {
                 resolvedOnItemClick(
                   event as unknown as React.MouseEvent,
-                  rowData
+                  payload
                 );
               } else if (!event) {
                 // No event provided, but handler exists - call it with a minimal event
                 // This handles cases where DataView might not pass an event
                 const minimalEvent = {} as unknown as React.MouseEvent;
-                resolvedOnItemClick(minimalEvent, rowData);
+                resolvedOnItemClick(minimalEvent, payload);
               }
             },
             isClickable: true,
@@ -367,7 +391,15 @@ const DataViewWrapper: FunctionComponent<DataViewWrapperProps> = ({
         row: rowCells,
       };
     });
-  }, [sortedData, page, perPage, columns, resolvedOnItemClick]);
+  }, [
+    sortedData,
+    page,
+    perPage,
+    columns,
+    resolvedOnItemClick,
+    id,
+    inputDataType,
+  ]);
 
   const emptyState = (
     <Tbody>
@@ -411,17 +443,39 @@ const DataViewWrapper: FunctionComponent<DataViewWrapperProps> = ({
           filters={
             shouldEnableFilters ? (
               <DataViewFilters
-                onChange={(_e, values) => onSetFilters(values)}
-                values={filters}
+                onChange={(_key, newValues) => {
+                  const normalized: Record<string, string> = {};
+                  Object.entries(newValues).forEach(([k, v]) => {
+                    const col = columns.find(
+                      (c) => c.key === k || c.label === k
+                    );
+                    const key = col?.key ?? k;
+                    normalized[key] =
+                      typeof v === "string" ? v : v != null ? String(v) : "";
+                  });
+                  onSetFilters(normalized);
+                }}
+                values={(() => {
+                  const byLabel: Record<string, string> = {};
+                  filterableFields.forEach((fieldKey) => {
+                    const col = columns.find((c) => c.key === fieldKey);
+                    if (col) byLabel[col.label] = filters[fieldKey] ?? "";
+                  });
+                  return byLabel;
+                })()}
               >
-                {filterableFields.map((fieldKey) => (
-                  <DataViewTextFilter
-                    key={fieldKey}
-                    filterId={fieldKey}
-                    title={fieldKey}
-                    placeholder={`Filter by ${fieldKey.toLowerCase()}`}
-                  />
-                ))}
+                {filterableFields.map((fieldKey) => {
+                  const column = columns.find((col) => col.key === fieldKey);
+                  const label = column?.label ?? fieldKey;
+                  return (
+                    <DataViewTextFilter
+                      key={fieldKey}
+                      filterId={label}
+                      title={label}
+                      placeholder={`Filter by ${label}`}
+                    />
+                  );
+                })}
               </DataViewFilters>
             ) : undefined
           }

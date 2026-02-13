@@ -13,9 +13,23 @@ import {
   matchesContextValue,
 } from "../utils/registryMatchers";
 
+export interface ItemDataFieldValue {
+  id: string;
+  name: string;
+  data_path?: string;
+  value: string | number | boolean | null;
+}
+
+export interface ItemClickPayload {
+  componentId?: string;
+  inputDataType?: string;
+  index?: number;
+  fields: Record<string, ItemDataFieldValue>;
+}
+
 export type ItemClickHandler = (
   event: React.MouseEvent | React.KeyboardEvent,
-  itemData: Record<string, string | number | boolean | null>
+  payload: ItemClickPayload
 ) => void;
 export type CellFormatter = (
   value: string | number | boolean | null | (string | number)[]

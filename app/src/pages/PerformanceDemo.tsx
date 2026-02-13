@@ -251,6 +251,10 @@ function PerformanceSetup() {
         </span>
       );
     });
+
+    registry.registerItemClick("performance-demo", (_event, payload) => {
+      console.log("Item clicked:", payload);
+    });
   }, [registry]);
 
   return null;
@@ -295,7 +299,8 @@ export default function PerformanceDemo() {
       <PageSection>
         <Content component={ContentVariants.p}>
           Large data-view table with {ROW_COUNT} rows and 12 columns to test
-          performance. Formatter per column (left to right):
+          performance. When a row is clicked, the handler received payload is
+          output to the browser console. Formatter per column (left to right):
         </Content>
         <Content component={ContentVariants.ul} style={{ marginTop: "8px" }}>
           <li>

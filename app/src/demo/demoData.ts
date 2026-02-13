@@ -827,6 +827,7 @@ export const dataViewServers = {
   id: "dataview-servers",
   fields: [
     {
+      id: "server-name",
       name: "Server Name",
       data_path: "servers.name",
       data: [
@@ -838,6 +839,7 @@ export const dataViewServers = {
       ],
     },
     {
+      id: "ip-address",
       name: "IP Address",
       data_path: "servers.ip",
       data: [
@@ -849,6 +851,7 @@ export const dataViewServers = {
       ],
     },
     {
+      id: "environment",
       name: "Environment",
       data_path: "servers.env",
       data: [
@@ -860,11 +863,13 @@ export const dataViewServers = {
       ],
     },
     {
+      id: "cpu-usage",
       name: "CPU Usage",
       data_path: "servers.cpu",
       data: ["45%", "67%", "23%", "12%", "8%"],
     },
     {
+      id: "memory",
       name: "Memory",
       data_path: "servers.memory",
       data: [
@@ -876,6 +881,7 @@ export const dataViewServers = {
       ],
     },
     {
+      id: "status",
       name: "Status",
       data_path: "servers.status",
       data: ["Running", "Running", "Running", "Running", "Stopped"],
@@ -893,6 +899,7 @@ export const dataViewMinimal = {
   id: "dataview-minimal",
   fields: [
     {
+      id: "item",
       name: "Item",
       data_path: "items.name",
       data: [
@@ -911,6 +918,7 @@ export const dataViewMinimal = {
       ],
     },
     {
+      id: "category",
       name: "Category",
       data_path: "items.category",
       data: [
@@ -929,6 +937,7 @@ export const dataViewMinimal = {
       ],
     },
     {
+      id: "quantity",
       name: "Quantity",
       data_path: "items.quantity",
       data: [10, 25, 8, 50, 15, 32, 18, 45, 7, 22, 38, 12],
@@ -944,6 +953,7 @@ export const dataViewMinimalSmall = {
   id: "dataview-minimal-small",
   fields: [
     {
+      id: "task",
       name: "Task",
       data_path: "tasks.name",
       data: [
@@ -955,11 +965,13 @@ export const dataViewMinimalSmall = {
       ],
     },
     {
+      id: "status",
       name: "Status",
       data_path: "tasks.status",
       data: ["Complete", "In Progress", "Pending", "Complete", "In Progress"],
     },
     {
+      id: "priority",
       name: "Priority",
       data_path: "tasks.priority",
       data: ["High", "Medium", "Low", "Medium", "Low"],
@@ -975,11 +987,13 @@ export const dataViewNumericSort = {
   id: "dataview-numeric-sort",
   fields: [
     {
+      id: "id",
       name: "ID",
       data_path: "items.id",
       data: [1, 2, 10, 20, 100, 5, 50, 3, 30, 7],
     },
     {
+      id: "size",
       name: "Size",
       data_path: "items.size",
       data: [
@@ -996,6 +1010,7 @@ export const dataViewNumericSort = {
       ],
     },
     {
+      id: "price",
       name: "Price",
       data_path: "items.price",
       data: [
@@ -1012,6 +1027,7 @@ export const dataViewNumericSort = {
       ],
     },
     {
+      id: "count",
       name: "Count",
       data_path: "items.count",
       data: [
@@ -1041,6 +1057,7 @@ export const dataViewDateSort = {
   id: "dataview-date-sort",
   fields: [
     {
+      id: "event",
       name: "Event",
       data_path: "events.name",
       data: [
@@ -1053,6 +1070,7 @@ export const dataViewDateSort = {
       ],
     },
     {
+      id: "date",
       name: "Date",
       data_path: "events.date",
       data: [
@@ -1065,6 +1083,7 @@ export const dataViewDateSort = {
       ],
     },
     {
+      id: "time",
       name: "Time",
       data_path: "events.time",
       data: [
@@ -1077,6 +1096,7 @@ export const dataViewDateSort = {
       ],
     },
     {
+      id: "status",
       name: "Status",
       data_path: "events.status",
       data: [

@@ -30,6 +30,7 @@ import ComponentDemo from "./pages/ComponentDemo";
 import HandBuildComponentsDemo from "./pages/HandBuildComponentsDemo";
 import Home from "./pages/Home";
 import PerformanceDemo from "./pages/PerformanceDemo";
+import PodsResourceDemo from "./pages/PodsResourceDemo";
 import RegistryDemo from "./pages/RegistryDemo";
 
 function AppContent() {
@@ -54,6 +55,7 @@ function AppContent() {
 
   const getPageTitle = () => {
     if (location.pathname === "/performance") return "HandlerRegistry demo";
+    if (location.pathname === "/pods-resource") return "Pods Resource Usage";
     const component = getComponentByPath(location.pathname);
     return component?.name || "Home";
   };
@@ -167,6 +169,7 @@ function AppContent() {
             />
             <Route path="/performance" element={<PerformanceDemo />} />
             <Route path="/component/registry" element={<RegistryDemo />} />
+            <Route path="/pods-resource" element={<PodsResourceDemo />} />
             <Route path="/component/:componentId" element={<ComponentDemo />} />
           </Routes>
         </div>

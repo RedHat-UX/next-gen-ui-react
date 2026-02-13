@@ -1,4 +1,5 @@
 import {
+  type ItemClickPayload,
   ComponentHandlerRegistryProvider,
   useComponentHandlerRegistry,
 } from "@local-lib/components/ComponentHandlerRegistry";
@@ -298,18 +299,17 @@ export default function ComponentDemo() {
                         {...(example.data as Record<string, unknown>)}
                         onItemClick={(
                           event: MouseEvent | KeyboardEvent,
-                          itemData: Record<string, string | number>
+                          payload: ItemClickPayload
                         ) => {
-                          // Demo: Show an alert with the clicked item data
-                          const itemInfo = Object.entries(itemData)
-                            .map(([key, value]) => `${key}: ${value}`)
+                          const itemInfo = Object.entries(payload.fields)
+                            .map(([key, field]) => `${key}: ${field.value}`)
                             .join(", ");
                           alert(
                             `Item clicked!\n\nItem data:\n${itemInfo}\n\nCheck the browser console for more details.`
                           );
                           console.log("Item clicked:", {
                             event,
-                            itemData,
+                            payload,
                             timestamp: new Date().toISOString(),
                           });
                         }}

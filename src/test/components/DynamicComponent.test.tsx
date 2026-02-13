@@ -12,11 +12,13 @@ describe("DynamicComponent", () => {
       id: "test-table-id",
       fields: [
         {
+          id: "name",
           name: "Name",
           data_path: "user.name",
           data: ["John Doe", "Jane Smith"],
         },
         {
+          id: "age",
           name: "Age",
           data_path: "user.age",
           data: [28, 34],

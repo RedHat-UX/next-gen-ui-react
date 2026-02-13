@@ -367,9 +367,14 @@ function RegistrySetup() {
     );
 
     // Example 5: Item click handler
-    registry.registerItemClick("catalog", (event, itemData) => {
+    registry.registerItemClick("catalog", (event, payload) => {
+      console.log("Item click handler – full payload:", payload);
+      const product = payload.fields["product-name"]?.value ?? "—";
+      const status = payload.fields["product-status"]?.value ?? "—";
+      const price = payload.fields["product-price"]?.value ?? "—";
+      const category = payload.fields["product-category"]?.value ?? "—";
       alert(
-        `Item clicked!\n\nProduct: ${itemData["Product"]}\nStatus: ${itemData["Status"]}\nPrice: ${itemData["Price"]}\nCategory: ${itemData["Category"]}`
+        `Item clicked!\n\nProduct: ${product}\nStatus: ${status}\nPrice: ${price}\nCategory: ${category}`
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- registerTick forces re-register after cleanup (Strict Mode)
@@ -632,8 +637,14 @@ function App() {
           <strong>Registered handler:</strong>
         </Content>
         <CodeBlock>
-          <CodeBlockCode>{`registry.registerItemClick("catalog", (event, itemData) => {
-  alert(\`Item clicked!\\n\\nProduct: \${itemData["Product"]}\\nStatus: \${itemData["Status"]}\\nPrice: \${itemData["Price"]}\\nCategory: \${itemData["Category"]}\\nRole: \${itemData["Role"]}\\nEmail: \${itemData["Email"]}\`);
+          <CodeBlockCode>{`// payload: { componentId, inputDataType, index, fields } — fields keyed by field.id
+registry.registerItemClick("catalog", (event, payload) => {
+  console.log("Item click handler – full payload:", payload);
+  const product = payload.fields["product-name"]?.value ?? "—";
+  const status = payload.fields["product-status"]?.value ?? "—";
+  const price = payload.fields["product-price"]?.value ?? "—";
+  const category = payload.fields["product-category"]?.value ?? "—";
+  alert(\`Item clicked! Product: \${product}, Status: \${status}, Price: \${price}, Category: \${category}\`);
 });`}</CodeBlockCode>
         </CodeBlock>
         <Content component={ContentVariants.p} style={{ marginTop: "8px" }}>
@@ -1000,9 +1011,9 @@ function MyComponent() {
       return formatDate(value);
     });
 
-    // Register an item click handler
-    registry.registerItemClick('catalog', (event, itemData) => {
-      console.log('Item clicked:', itemData);
+    // Register an item click handler (payload has .fields, .componentId, .inputDataType, .index)
+    registry.registerItemClick('catalog', (event, payload) => {
+      console.log('Item clicked:', payload);
     });
 
     // Cleanup on unmount: pass same matchers (and inputDataType if used) as at registration
@@ -1321,19 +1332,38 @@ registry.registerFormatterById(/.*-endDate$/, (value) => formatDate(value));`}</
                 <code>"catalog"</code>) or RegExp to match multiple types.
               </li>
               <li>
-                <code>handler</code> - Function that receives the click event
-                and item data.
+                <code>handler</code> - Function called when a row is clicked (or
+                activated via keyboard). It receives:
+                <ul>
+                  <li>
+                    <code>event</code> - The React mouse or keyboard event.
+                  </li>
+                  <li>
+                    <code>payload</code> - <code>ItemClickPayload</code>:{" "}
+                    <code>componentId</code>, <code>inputDataType</code>,{" "}
+                    <code>index</code> (0-based in entire dataset), and{" "}
+                    <code>fields</code> (object keyed by <code>field.id</code>,
+                    each value <code>ItemDataFieldValue</code> with{" "}
+                    <code>id</code>, <code>name</code>, <code>data_path?</code>,{" "}
+                    <code>value</code>). Use{" "}
+                    <code>payload.fields["my-field-id"]?.value</code> for a
+                    column’s value.
+                  </li>
+                </ul>
               </li>
             </ul>
             <CodeBlock style={{ marginTop: "12px" }}>
-              <CodeBlockCode>{`// By inputDataType (exact)
-registry.registerItemClick("catalog", (event, itemData) => {
-  console.log("Item clicked:", itemData);
+              <CodeBlockCode>{`// payload: { componentId, inputDataType, index, fields } — use payload.fields[fieldId].value
+// By inputDataType (exact)
+registry.registerItemClick("catalog", (event, payload) => {
+  const name = payload.fields["product-name"]?.value;
+  const status = payload.fields["product-status"]?.value;
+  console.log("Item clicked:", name, status);
 });
 
 // By RegExp (match multiple types)
-registry.registerItemClick(/catalog|inventory/, (event, itemData) => {
-  console.log("Item clicked:", itemData);
+registry.registerItemClick(/catalog|inventory/, (event, payload) => {
+  console.log("Item clicked:", payload);
 });`}</CodeBlockCode>
             </CodeBlock>
           </div>
@@ -1484,17 +1514,36 @@ registry.registerItemClick(/catalog|inventory/, (event, itemData) => {
               ItemClickHandler
             </Content>
             <CodeBlock>
-              <CodeBlockCode>{`type ItemClickHandler = (
+              <CodeBlockCode>{`interface ItemDataFieldValue {
+  id: string;
+  name: string;
+  data_path?: string;
+  value: string | number | boolean | null;
+}
+
+interface ItemClickPayload {
+  componentId?: string;   // DataViewWrapper id
+  inputDataType?: string; // DataViewWrapper inputDataType
+  index?: number;         // 0-based index in entire dataset (ignoring search/sort/pagination)
+  fields: Record<string, ItemDataFieldValue>;
+}
+
+type ItemClickHandler = (
   event: React.MouseEvent | React.KeyboardEvent,
-  itemData: Record<string, string | number | boolean | null>
+  payload: ItemClickPayload
 ) => void;`}</CodeBlockCode>
             </CodeBlock>
             <Content
               component={ContentVariants.p}
               style={{ marginTop: "12px", marginBottom: "0" }}
             >
-              Function type for handling item click events. Receives the click
-              event and the item data object.
+              Function type for handling item click events. First argument: the
+              React event. Second argument: <code>payload</code> (
+              <code>ItemClickPayload</code>) with <code>componentId</code>,{" "}
+              <code>inputDataType</code>, <code>index</code> once, and{" "}
+              <code>fields</code> (keyed by <code>field.id</code>, values{" "}
+              <code>ItemDataFieldValue</code>). Use{" "}
+              <code>payload.fields[fieldId].value</code> for the cell value.
             </Content>
           </div>
 
