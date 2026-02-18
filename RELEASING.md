@@ -32,74 +32,50 @@ The `NPM_TOKEN` secret is **already configured** in the GitHub repository for au
 
 ## Release Process
 
-### 1. Prepare the Release
+Releases are **tag-only**: you create a version tag from current `main` and push the tag. The workflow uses the tag as the version (no version-bump commit or release PR needed). Branch protection on `main` does not block pushing tags.
 
-Make sure you're on the `main` branch with all changes committed:
+### 1. Prepare
+
+Ensure everything you want in the release is merged to `main`, then verify locally:
 
 ```bash
+# Use upstream if you use a fork; origin if you have direct access
+git fetch upstream   # or: git fetch origin
 git checkout main
-# If you have direct access to the main repository:
-git pull origin main
-# If you're working with a fork:
-git pull upstream main
+git pull upstream main   # or: git pull origin main
 ```
 
-Review and update documentation:
-
-- Ensure `README.md` is up to date with all new features and components
-- Update examples if needed
-- Verify all links are working
-
-Verify everything is working locally:
+- Review that `README.md` and docs are up to date.
+- Run the full check:
 
 ```bash
 npm run verify
 ```
 
-This command runs type checking, linting, tests, and builds the package.
+### 2. Create and Push the Version Tag
 
-### 2. Create a Version Tag
+Create a tag on the current `main` and push it. The tag name is the release version (e.g. `v1.2.0`). You are **not** pushing `main`, only the tag.
 
-Use npm's version command to bump the version and create a git tag:
-
-```bash
-# For a prerelease (1.0.0-alpha.0 → 1.0.0-alpha.1)
-npm version prerelease --preid=alpha
-
-# For a patch release (1.0.0 → 1.0.1)
-npm version patch
-
-# For a minor release (1.0.0 → 1.1.0)
-npm version minor
-
-# For a major release (1.0.0 → 2.0.0)
-npm version major
-
-# Or specify an exact version
-npm version 1.0.0
-```
-
-This will:
-
-- Update the version in `package.json`
-- Create a git commit with the version change
-- Create a git tag (e.g., `v1.0.0`)
-
-### 3. Push the Tag
-
-Push both the commit and the tag to GitHub:
+**Option A — From your machine:**
 
 ```bash
-# If you have direct access to the main repository:
-git push origin main --follow-tags
-
-# If you're working with a fork (origin = your fork, upstream = main repo):
-git push upstream main --follow-tags
+# Tag the current main (replace v1.2.0 with your version)
+git tag v1.2.0
+git push upstream v1.2.0   # or: git push origin v1.2.0
 ```
 
-**Note**: For releases, always push to the main repository (`RedHat-UX/next-gen-ui-react`). If you have an `upstream` remote configured, use `upstream` instead of `origin`.
+**Option B — From GitHub:**
 
-### 4. Automated Build & Publish
+1. Go to **Releases** → **Create a new release**.
+2. Under “Choose a tag”, type the new version (e.g. `v1.2.0`) and select **Create new tag on publish**.
+3. Choose the `main` branch as the target.
+4. Publish the release. Creating/publishing the release pushes the tag and triggers the workflow.
+
+Use [Semantic Versioning](https://semver.org/): `v1.0.0` (patch), `v1.1.0` (minor), `v2.0.0` (major). Pre-releases: `v1.0.0-alpha.0`, `v1.0.0-beta.0`, `v1.0.0-rc.0`.
+
+**Note:** The repo keeps a placeholder version in `package.json` (`0.0.0-development`). The real version is the git tag; the release workflow sets the published version from the tag. This is the same pattern used by many tag-driven projects (e.g. semantic-release): no version-bump commits or sync PRs.
+
+### 3. Automated Build & Publish
 
 Once the tag is pushed, GitHub Actions will automatically:
 
@@ -112,7 +88,7 @@ Once the tag is pushed, GitHub Actions will automatically:
    - Stable versions → `npm install @rhngui/patternfly-react-renderer@latest`
 6. ✅ Create a GitHub Release with auto-generated release notes
 
-### 5. Verify the Release
+### 4. Verify the Release
 
 1. Check the GitHub Actions workflow completed successfully:
    - Go to your repository → Actions tab
@@ -185,6 +161,10 @@ All checks must pass before merging PRs.
 
 ## Troubleshooting
 
+### Push to main rejected (GH013)
+
+If you see that error when pushing a branch, you're trying to push to `main` directly. For releases you don't need to push `main`—only push the version tag (e.g. `git push upstream v1.2.0`). Tags are not blocked by branch protection.
+
 ### Release workflow failed
 
 1. Check the GitHub Actions logs for the specific error
@@ -219,11 +199,9 @@ npm unpublish @rhngui/patternfly-react-renderer@1.0.0
 
 - [ ] All changes merged to `main`
 - [ ] `README.md` reviewed and updated with new features
-- [ ] All tests passing locally
-- [ ] Version number follows SemVer
-- [ ] `npm version` command run
-- [ ] Tag pushed to GitHub
-- [ ] GitHub Actions workflow completed successfully
+- [ ] `npm run verify` passing locally
+- [ ] Version tag created from `main` (e.g. `v1.2.0`) and pushed
+- [ ] GitHub Actions release workflow completed successfully
 - [ ] npm package published and available
 - [ ] GitHub Release created with auto-generated notes
 - [ ] Documentation site updated (if needed)

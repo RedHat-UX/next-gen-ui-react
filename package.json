@@ -1,7 +1,7 @@
 {
   "name": "@rhngui/patternfly-react-renderer",
   "private": false,
-  "version": "1.1.1",
+  "version": "0.0.0-development",
   "description": "Patternfly React component wrappers for the Next Gen UI Agent",
   "type": "module",
   "main": "dist/index.cjs.js",
